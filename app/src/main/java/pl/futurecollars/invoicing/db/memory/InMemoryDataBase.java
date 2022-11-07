@@ -33,7 +33,7 @@ public class InMemoryDataBase implements Database {
   @Override
   public void update(long id, Invoice invoice) {
     if (!invoices.containsKey(id)) {
-      throw new IllegalArgumentException("Invoice with id:" + id + " does not exist in database");
+      throw new IllegalArgumentException("Invoice with id: " + id + " does not exist in database");
     }
 
     invoice.setId(id);
