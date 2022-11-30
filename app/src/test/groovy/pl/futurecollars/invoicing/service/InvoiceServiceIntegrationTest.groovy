@@ -1,6 +1,6 @@
 package pl.futurecollars.invoicing.service
 
-import pl.futurecollars.invoicing.db.Database
+import pl.futurecollars.invoicing.db.DataBase
 import pl.futurecollars.invoicing.db.memory.InMemoryDataBase
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
@@ -13,7 +13,7 @@ class InvoiceServiceIntegrationTest extends Specification {
     private List<Invoice> invoices
 
     def setup() {
-        Database db = new InMemoryDataBase()
+        DataBase db = new InMemoryDataBase()
         service = new InvoiceService(db)
 
         invoices = (1..12).collect { invoice(it) }

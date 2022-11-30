@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import pl.futurecollars.invoicing.db.Database;
+import pl.futurecollars.invoicing.db.DataBase;
 import pl.futurecollars.invoicing.model.Invoice;
 
-public class InMemoryDataBase implements Database {
+public class InMemoryDataBase implements DataBase {
 
   private Map<Long, Invoice> invoices = new HashMap<>();
   private long nextId = 1;
