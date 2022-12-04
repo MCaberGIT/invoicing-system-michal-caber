@@ -13,7 +13,7 @@ import pl.futurecollars.invoicing.utils.JsonService;
 
 @Generated
 @AllArgsConstructor
-public class FileBaseDatabase implements DataBase {
+public class FileBasedDatabase implements DataBase {
 
   private final Path path;
   private final IdService idService;
@@ -79,7 +79,7 @@ public class FileBaseDatabase implements DataBase {
 
       filesService.writeToFile(path, String.valueOf(listWithoutInvoice));
     } catch (IOException e) {
-      throw new RuntimeException("Failed to update" + id, e);
+      throw new RuntimeException("Failed to update" + " " + id, e);
     }
   }
 
