@@ -1,78 +1,94 @@
-package pl.futurecollars.invoicing.db
+package pl.futurecollars.invoicing.memory
 
-import pl.futurecollars.invoicing.TestHelpers
+import pl.futurecollars.invoicing.db.DataBase
+import pl.futurecollars.invoicing.db.memory.InMemoryDataBase
 import pl.futurecollars.invoicing.model.Invoice
-import pl.futurecollars.invoicing.utils.FileService
-import pl.futurecollars.invoicing.utils.JsonService
 import spock.lang.Specification
 
-import java.nio.file.Files
-import java.nio.file.NoSuchFileException
-import java.nio.file.Path
+import static pl.futurecollars.invoicing.TestHelpers.invoice
 
+class InMemoryDataBaseTest extends Specification {
 
-class FileBasedDatabaseTest extends Specification {
+    private DataBase database
+    private List<Invoice> invoices
 
-    Path idPath = Path.of("C:\\Users\\mcabe\\Desktop\\Projects\\invoicing-system-michal-caber\\app\\src\\test\\resources\\idTestFile")
-    Path dbPath = Path.of("C:\\Users\\mcabe\\Desktop\\Projects\\invoicing-system-michal-caber\\app\\src\\test\\resources\\dbTestFile.txt")
-    Path wrong = Path.of("C:\\Users\\mcabe\\Ddesktop\\Projects\\invoicing-system-michal-caber\\app\\src\\test\\resources\\dbTestFile.txt")
-    FileService fileService = new FileService()
-    JsonService jsonService = new JsonService()
-    IdService idService = new IdService(idPath, fileService)
-    DataBase fileBased = new FileBasedDatabase(dbPath, idService, fileService, jsonService)
-    DataBase wrongFileDataBase = new FileBasedDatabase(wrong, idService, fileService, jsonService)
-    Invoice invoice = TestHelpers.invoice(0)
+    def setup() {
+        database = new InMemoryDataBase()
 
-
-    def cleanup() {
-        Files.write(idPath, [])
-        Files.write(dbPath, [])
+        invoices = (1..12).collect { invoice(it) }
     }
 
-    def "Should save invoice"() {
+    def "should save invoices returning sequential id"() {
         when:
-        def result = fileBased.save(invoice)
+        def ids = invoices.collect({ database.save(it) })
+
         then:
-        result == 1
+        ids == (1..invoices.size()).collect()
+        ids.forEach({ assert database.getById(it).isPresent() })
+        ids.forEach({ assert database.getById(it).get().getId() == it })
+        ids.forEach({ assert database.getById(it).get() == invoices.get(it - 1 as int) })
     }
 
-    def "should throw exception with invoice saving error"() {
-        when:
-        def result = wrongFileDataBase.save(invoice)
-        then:
-        def ex = thrown(RuntimeException)
-        ex.message == "Database failed to save invoice"
+    def "should get by id returns empty optional when there is no invoice with given id"() {
+        expect:
+        !database.getById(1).isPresent()
     }
 
-    def "should throw exception with id error"() {
-        when:
-        wrongFileDataBase.getById(1)
-
-        then:
-        def exception = thrown(RuntimeException)
-        exception.message == "Database failed to get invoice with id: 1"
-        exception.cause.class == NoSuchFileException
+    def "should get all returns empty collection if there were no invoices"() {
+        expect:
+        database.getAll().isEmpty()
     }
 
+    def "should get all returns all invoices in the database, deleted invoice is not returned"() {
+        given:
+        invoices.forEach({ database.save(it) })
 
-    def "should throw an exception with no existing invoice ID"() {
+        expect:
+        database.getAll().size() == invoices.size()
+        database.getAll().forEach({ assert it == invoices.get(it.getId() - 1 as int) })
+
         when:
-        fileBased.update(2, invoice)
-        def result = fileBased.getById(2)
+        database.delete(1)
 
         then:
-        def ex = thrown(RuntimeException)
-        ex.message == "Invoice with id: 2 does not exist in database"
+        database.getAll().size() == invoices.size() - 1
+        database.getAll().forEach({ assert it == invoices.get(it.getId() - 1 as int) })
+        database.getAll().forEach({ assert it.getId() != 1 })
     }
 
-    def "should throw an exception with an update invoice error"() {
+    def "should delete all invoices"() {
+        given:
+        invoices.forEach({ database.save(it) })
+
         when:
-        wrongFileDataBase.update(1, invoice)
-        def result = wrongFileDataBase.getById(1)
+        invoices.forEach({ database.delete(it.getId()) })
 
         then:
-        def ex = thrown(RuntimeException)
-        ex.message == "Failed to update 1"
-        ex.cause.class == NoSuchFileException
+        database.getAll().isEmpty()
+    }
+
+    def "deleting not existing invoice is not causing any error"() {
+        expect:
+        database.delete(123)
+    }
+
+    def "it's possible to update the invoice"() {
+        given:
+        long id = database.save(invoices.get(0))
+
+        when:
+        database.update(id, invoices.get(1))
+
+        then:
+        database.getById(id).get() == invoices.get(1)
+    }
+
+    def "updating not existing invoice throws exception"() {
+        when:
+        database.update(213, invoices.get(1))
+
+        then:
+        def ex = thrown(IllegalArgumentException)
+        ex.message == "Invoice with id: 213 does not exist in database"
     }
 }

@@ -1,7 +1,6 @@
 package pl.futurecollars.invoicing.db.memory
 
 import pl.futurecollars.invoicing.db.DataBase
-import pl.futurecollars.invoicing.db.memory.InMemoryDataBase
 import pl.futurecollars.invoicing.model.Invoice
 import spock.lang.Specification
 

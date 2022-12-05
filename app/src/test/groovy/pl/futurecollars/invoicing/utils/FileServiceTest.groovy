@@ -1,21 +1,19 @@
-//package pl.futurecollars.invoicing.utils
-//
-//import spock.lang.Ignore
-//import spock.lang.Specification
-//
-//import java.nio.file.Files
-//import java.nio.file.Path
-//
-//class FileServiceTest extends Specification {
-//
-//    private FileService fileService = new FileService();
-//    private Path path = Path.of("C:\\Users\\mcabe\\Desktop\\Projects\\invoicing-system-michal-caber\\app\\src\\test\\resources\\lineTest.txt")
+package pl.futurecollars.invoicing.utils
+
+import spock.lang.Specification
+
+import java.nio.file.Files
+import java.nio.file.Path
+
+class FileServiceTest extends Specification {
+
+//    private FileService fileService = new FileService()
+//    private Path path = Path.of("C:\\Users\\macie\\Documents\\Projects\\invoicing-system-maciek-bella\\app\\src\\test\\resources\\lineTest.txt")
 //
 //    def cleanup() {
 //        Files.write(path, [])
 //    }
 //
-//    @Ignore
 //    def "should line is correctly appended to file"() {
 //        given:
 //        def testLine = "Test line to write"
@@ -29,20 +27,18 @@
 //
 //    }
 //
-//    @Ignore
 //    def "should line is correctly written to file"() {
 //
 //        given:
-//        fileService.writeToFile(path, "1")
+//        fileService.writeToFile(path, "2")
 //
 //        when:
 //        def result = Files.readAllLines(path)
 //
 //        then:
-//        ["1"] == result
+//        ["2"] == result
 //    }
 //
-//    @Ignore
 //    def "should list of lines is correctly written to file"() {
 //        given:
 //        def letters = ['a', 'b', 'c']
@@ -56,7 +52,6 @@
 //
 //    }
 //
-//    @Ignore
 //    def "line is correctly read from file"() {
 //        given:
 //        def lines = List.of("line 1", "line 2", "line 3")
@@ -68,5 +63,5 @@
 //        then:
 //        lines == result
 //    }
-//
-//}
+
+}
