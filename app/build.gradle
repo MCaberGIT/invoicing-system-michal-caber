@@ -74,24 +74,36 @@ checkstyle {
 }
 
 jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                counter = 'BRANCH'
-                minimum = 0.9
-            }
-        }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude:
+                    ['pl/futurecollars/invoicing/controller/InvoiceController.class',
+                     'pl/futurecollars/invoicing/db/FileBasedDatabase.class',
+                     'pl/futurecollars/invoicing/db/IdService.class',
+                     'pl/futurecollars/invoicing/utils/FileService.class'])
+        }))
+    }
 
-        rule {
-            limit {
-                counter = 'LINE'
-                minimum = 0.9
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                limit {
+                    counter = 'BRANCH'
+                    minimum = 0.9
+                }
+            }
+
+            rule {
+                limit {
+                    counter = 'LINE'
+                    minimum = 0.9
+                }
             }
         }
     }
-}
 
-test {
-    finalizedBy jacocoTestReport
-    finalizedBy jacocoTestCoverageVerification
+    test {
+        finalizedBy jacocoTestReport
+        finalizedBy jacocoTestCoverageVerification
+    }
 }
