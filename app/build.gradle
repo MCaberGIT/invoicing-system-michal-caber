@@ -14,7 +14,26 @@ plugins {
     id 'application'
 
     id 'checkstyle'
+
     id 'jacoco'
+
+    id 'org.springframework.boot' version '2.7.6'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'java'
+}
+
+group = 'pl.futurecollars.invoicing'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.6"
 }
 
 repositories {
@@ -32,19 +51,23 @@ dependencies {
 
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:31.0.1-jre'
+    // Json
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1'
 
-    // Lombok
+    // lombok
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     testCompileOnly 'org.projectlombok:lombok:1.18.24'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
-    //JSON
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.1'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.1'
-
-
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 application {
@@ -52,9 +75,16 @@ application {
     mainClass = 'pl.futurecollars.invoicing.App'
 }
 
-tasks.named('test') {
-    // Use JUnit Platform for unit tests.
+test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+check {
+    finalizedBy jacocoTestCoverageVerification
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
 }
 
 checkstyle {
@@ -65,6 +95,15 @@ checkstyle {
 }
 
 jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude:
+                    ['pl/futurecollars/invoicing/controller/InvoiceController.class',
+                     'pl/futurecollars/invoicing/db/FileBasedDatabase.class',
+                     'pl/futurecollars/invoicing/db/IdService.class',
+                     'pl/futurecollars/invoicing/utils/FileService.class'])
+        }))
+    }
     violationRules {
         rule {
             limit {
@@ -72,6 +111,7 @@ jacocoTestCoverageVerification {
                 minimum = 0.90
             }
         }
+
         rule {
             limit {
                 counter = 'LINE'
