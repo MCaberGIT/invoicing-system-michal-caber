@@ -1,9 +1,10 @@
 package pl.futurecollars.invoicing;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import pl.futurecollars.invoicing.db.Database;
+import pl.futurecollars.invoicing.db.DataBase;
 import pl.futurecollars.invoicing.db.memory.InMemoryDataBase;
 import pl.futurecollars.invoicing.model.Company;
 import pl.futurecollars.invoicing.model.Invoice;
@@ -14,12 +15,11 @@ import pl.futurecollars.invoicing.service.InvoiceService;
 public class App {
 
   public String getGreeting() {
-    return "Hello World!";
+    return "Hello World";
   }
 
-  public static void main(String[] args) {
-    System.out.println(new App().getGreeting());
-    Database db = new InMemoryDataBase();
+  public static void main(String[] args) throws IOException {
+    DataBase db = new InMemoryDataBase();
     InvoiceService service = new InvoiceService(db);
 
     Company buyer = new Company("5213861303", "ul. Bukowińska 24d/7 02-703 Warszawa, Polska", "iCode Trust Sp. z o.o");

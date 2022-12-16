@@ -1,7 +1,6 @@
 package pl.futurecollars.invoicing.service
 
-import pl.futurecollars.invoicing.db.Database
-import pl.futurecollars.invoicing.model.Invoice
+import pl.futurecollars.invoicing.db.DataBase
 import spock.lang.Specification
 
 import static pl.futurecollars.invoicing.TestHelpers.invoice
@@ -9,7 +8,7 @@ import static pl.futurecollars.invoicing.TestHelpers.invoice
 class InvoiceServiceUnitTest extends Specification {
 
     private InvoiceService service
-    private Database database
+    private DataBase database
 
     def setup() {
         database = Mock()
