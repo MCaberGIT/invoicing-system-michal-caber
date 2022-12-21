@@ -6,9 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
-import lombok.Generated;
+import org.springframework.stereotype.Service;
 
-@Generated
+@Service
 public class FileService {
 
   public void appendLineToFile(Path path, String line) throws IOException {

@@ -2,34 +2,40 @@ package pl.futurecollars.invoicing.service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import pl.futurecollars.invoicing.db.DataBase;
 import pl.futurecollars.invoicing.model.Invoice;
 
+@Service
 public class InvoiceService {
 
-  private final DataBase database;
+  private final DataBase dataBase;
 
-  public InvoiceService(DataBase database) {
-    this.database = database;
+  @Autowired
+  public InvoiceService(@Qualifier("fileBasedDatabase") DataBase dataBase) {
+    this.dataBase = dataBase;
   }
 
   public long save(Invoice invoice) {
-    return database.save(invoice);
+    return dataBase.save(invoice);
   }
 
   public Optional<Invoice> getById(long id) {
-    return database.getById(id);
+    return dataBase.getById(id);
   }
 
   public List<Invoice> getAll() {
-    return database.getAll();
+    return dataBase.getAll();
   }
 
   public void update(long id, Invoice updatedInvoice) {
-    database.update(id, updatedInvoice);
+    dataBase.update(id, updatedInvoice);
   }
 
   public void delete(long id) {
-    database.delete(id);
+    dataBase.delete(id);
   }
+
 }
